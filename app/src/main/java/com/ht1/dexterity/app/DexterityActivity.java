@@ -19,8 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
-import com.microsoft.windowsazure.mobileservices.*;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
@@ -38,7 +36,6 @@ public class DexterityActivity extends Activity
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
-    private MobileServiceClient mClient;
     private DexterityDataSource mDataSource;
     private  List<TransmitterRawData> uploadData;
 
