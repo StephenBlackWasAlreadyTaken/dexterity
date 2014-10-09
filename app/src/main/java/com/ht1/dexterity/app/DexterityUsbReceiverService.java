@@ -106,6 +106,7 @@ public class DexterityUsbReceiverService extends Service
     public void onDestroy()
 	{
         super.onDestroy();
+        unregisterReceiver(mDetachReceiver);
     }
 
     private void StartBroadcastReceiver()
@@ -119,6 +120,7 @@ public class DexterityUsbReceiverService extends Service
                 {
                     mDetached = true;
                     stopSerialRead();
+                    StartUsbWatcher();
                 }
                 else if(intent.getAction().equals("USB_DEVICE_ATTACH"))
                 {
