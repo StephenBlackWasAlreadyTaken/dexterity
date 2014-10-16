@@ -9,6 +9,7 @@
     <string name="action_example"></string>
     <string name="action_settings">Settings</string>
     <string name="recUSBText1">USB Device:</string>
+    <string name="SocketDebug">SocketDebug</string>
     <string name="recUSBText2">Data View</string>
     <string name="recUSBText3">Log View</string>
     <string name="UsbDeviceName">Disconnected</string>

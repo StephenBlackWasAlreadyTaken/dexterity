@@ -22,6 +22,15 @@
         android:layout_gravity="center_horizontal"
         android:textColor="#ff6d18" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/UsbDeviceName"
+        android:id="@+id/SocketViewDebug"
+        android:layout_gravity="center_horizontal"
+        android:textColor="#ff6d18" />    
+    
     <Space
         android:layout_width="match_parent"
         android:layout_height="14dp" />

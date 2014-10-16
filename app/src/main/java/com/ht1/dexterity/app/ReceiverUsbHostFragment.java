@@ -37,6 +37,7 @@ public class ReceiverUsbHostFragment extends Fragment
 //	private DexterityUsbReceiverService mService;
 
     private TextView mUsbDeviceName;
+    private TextView mSocketDebug;
     private View mRootView;
 	private DataUpdateReceiver dataUpdateReceiver;
 	private DexterityDataSource mDataSource;
@@ -77,6 +78,9 @@ public class ReceiverUsbHostFragment extends Fragment
 //                button.setChecked(false);
                 mUsbDeviceName.setText("Disconnected");
             }
+            else if (intent.getAction().equals("NEW_PRINT")){
+            	mSocketDebug.setText(/*ServerSockets.mDebugString*/ "DebugString");
+            }
 			else if (intent.getAction().equals("NEW_READ"))
 			{
                 refreshListView();
@@ -100,6 +104,7 @@ public class ReceiverUsbHostFragment extends Fragment
         LayoutInflater lf = getActivity().getLayoutInflater();
         View rootView = lf.inflate(R.layout.fragment_receiver_usb, container, false);
         mUsbDeviceName = (TextView) rootView.findViewById(R.id.textView4);
+        mSocketDebug = (TextView) rootView.findViewById(R.id.SocketViewDebug);
         mRootView = rootView;
         refreshListView();
         return rootView;
@@ -141,6 +146,7 @@ public class ReceiverUsbHostFragment extends Fragment
         intentFilter.addAction("USB_CONNECT");
         intentFilter.addAction("USB_DISCONNECT");
         intentFilter.addAction("NEW_READ");
+        intentFilter.addAction("NEW_PRINT");
         getActivity().registerReceiver(dataUpdateReceiver, intentFilter);
 
         refreshListView();
