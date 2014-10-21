@@ -79,7 +79,7 @@ public class ReceiverUsbHostFragment extends Fragment
                 mUsbDeviceName.setText("Disconnected");
             }
             else if (intent.getAction().equals("NEW_PRINT")){
-            	mSocketDebug.setText(/*ServerSockets.mDebugString*/ "DebugString");
+            	mSocketDebug.setText(ServerSockets.mDebugString);
             }
 			else if (intent.getAction().equals("NEW_READ"))
 			{

@@ -5,11 +5,9 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
-
 import android.content.Intent;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
-
 import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.support.v4.widget.DrawerLayout;
 
 import java.io.IOException;
@@ -36,8 +35,8 @@ public class DexterityActivity extends Activity
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
-    private DexterityDataSource mDataSource;
-    private  List<TransmitterRawData> uploadData;
+    
+    private ServerSockets mServerSocket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,12 +51,37 @@ public class DexterityActivity extends Activity
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
 
+
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+        
+        // Start the socket thread
+        try
+        {
+            mServerSocket = new ServerSockets(this);
+            mServerSocket.start();
+        }catch(IOException e)
+        {
+        	// TODO: handle exceptions
+           e.printStackTrace();
+        }        
     }
 
+    @Override
+    public void onDestroy() {
+    	// stop the socket thread
+    	mServerSocket.Stop();
+    	try {
+			mServerSocket.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        super.onDestroy();
+    }    
+    
     @Override
     public void onStart() {
         super.onStart();
