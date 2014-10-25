@@ -7,12 +7,16 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 class ReadData {
-    public static void main(String[] args) {       
-        Read("192.168.1.25", 50005);
+    public static void main(String[] args) {
+        int numberOfRecords = 5;
+        if(args.length >= 1) {
+            numberOfRecords = Integer.parseInt(args[0]);
+        }
+        Read("192.168.1.25", 50005, numberOfRecords);
     }
 
 
-    public static boolean Read(String hostName,int port)
+    public static boolean Read(String hostName,int port, int numberOfRecords)
     {
         try
         {
@@ -22,7 +26,7 @@ class ReadData {
             // An example of using gson.
             ComunicationHeader ch = new ComunicationHeader();
             ch.version = 1;
-            ch.numberOfRecords = 3;
+            ch.numberOfRecords = numberOfRecords;
             String flat = gson.toJson(ch);
             ComunicationHeader ch2 = gson.fromJson(flat, ComunicationHeader.class);  
             System.out.println("Results code" + flat + ch2.version);
