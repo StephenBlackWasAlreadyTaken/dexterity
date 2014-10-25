@@ -36,8 +36,6 @@ public class DexterityActivity extends Activity
      */
     private CharSequence mTitle;
     
-    private ServerSockets mServerSocket;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,28 +55,12 @@ public class DexterityActivity extends Activity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
         
-        // Start the socket thread
-        try
-        {
-            mServerSocket = new ServerSockets(this);
-            mServerSocket.start();
-        }catch(IOException e)
-        {
-        	// TODO: handle exceptions
-           e.printStackTrace();
-        }        
+    
     }
 
     @Override
     public void onDestroy() {
-    	// stop the socket thread
-    	mServerSocket.Stop();
-    	try {
-			mServerSocket.join();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+ 
         super.onDestroy();
     }    
     

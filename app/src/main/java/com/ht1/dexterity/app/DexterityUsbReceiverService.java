@@ -35,6 +35,7 @@ public class DexterityUsbReceiverService extends Service
     private BroadcastReceiver mDetachReceiver;
     private Runnable mUsbMonitorLoop;
     private boolean mDetached = true;
+    private ServerSockets mServerSocket;
 
     @Override
     public IBinder onBind(Intent intent)
@@ -99,6 +100,18 @@ public class DexterityUsbReceiverService extends Service
         StartBroadcastReceiver();
         StartUsbWatcher();
 
+        // Start the socket thread
+        try
+        {
+            mServerSocket = new ServerSockets(this);
+            mServerSocket.start();
+        }catch(IOException e)
+        {
+            // TODO: handle exceptions
+           Log.e(TAG, "cought IOException...");
+           e.printStackTrace();
+        }    
+        
         Log.i(TAG, "Starting Service...");
     }
 
@@ -106,6 +119,15 @@ public class DexterityUsbReceiverService extends Service
     public void onDestroy()
 	{
         super.onDestroy();
+        // stop the socket thread
+        mServerSocket.Stop();
+        try {
+            mServerSocket.join();
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            Log.e(TAG, "cought InterruptedException...");
+            e.printStackTrace();
+        }
         unregisterReceiver(mDetachReceiver);
     }
 

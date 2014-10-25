@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.io.*;
 
+import android.content.Context;
 import android.content.Intent;
 
 import com.google.gson.Gson;
@@ -28,17 +29,19 @@ public class ServerSockets  extends Thread {
     
     public final static int PORT = 50005 ; // will have to be configurable at last...
     
-    DexterityActivity mDexterityActivity;
+    //DexterityActivity mDexterityActivity;
+    private final Context mContext;
 	   
-    public ServerSockets(DexterityActivity da) throws IOException
+    public ServerSockets(Context ctx) throws IOException
     {
-        mDexterityActivity = da;
+        //mDexterityActivity = da;
+        mContext = ctx.getApplicationContext(); 
     }
 
     void PrintSocketStatus(String Str) 
     {
         mDebugString += Str;
-        mDexterityActivity.sendBroadcast(new Intent("NEW_PRINT"));
+        mContext.sendBroadcast(new Intent("NEW_PRINT"));
     }
 
     public void Stop()
@@ -79,6 +82,8 @@ public class ServerSockets  extends Thread {
 
                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
                 BufferedReader in = new BufferedReader(	new InputStreamReader(clientSocket.getInputStream()));
+                
+                
     
                 String inputLine, outputLine;
 
@@ -94,7 +99,7 @@ public class ServerSockets  extends Thread {
                 PrintSocketStatus("Recieved the line + correct version " + inputLine);
 
                 // Get all the data that is currently stored
-                DexterityDataSource source = new DexterityDataSource(mDexterityActivity);
+                DexterityDataSource source = new DexterityDataSource(mContext);
                 PrintSocketStatus("source = " + source);
                 List<TransmitterRawData> rawDataList = source.getAllDataToUploadObjects();
 
