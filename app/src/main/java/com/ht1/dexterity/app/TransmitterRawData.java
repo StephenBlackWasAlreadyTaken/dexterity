@@ -22,10 +22,13 @@ public class TransmitterRawData {
     public int FilteredValue;
     public int BatteryLife;
     public int ReceivedSignalStrength;
-    public long CaptureDateTime;
+    public long CaptureDateTime; // For debug...
     public int Uploaded;
     public int UploadAttempts;
     public int UploaderBatteryLife;
+    // When sending set this value to the relative time...
+    // The time between the capture and now...
+    public long RelativeTime; 
 
     public int getTransmissionId() {
         return TransmissionId;
@@ -114,11 +117,14 @@ public class TransmitterRawData {
     public void set_id(long _id) {
         this._id = _id;
     }
+    
+    private Long getRelativeTime() {
+        return RelativeTime;
+    }
 
     public TransmitterRawData(){
 
     }
-
     public TransmitterRawData(String id, String raw, String filter, String battery, String rssi, int uploaderBattery){
         RawValue = Integer.parseInt(raw);
         FilteredValue = Integer.parseInt(filter);
@@ -165,10 +171,12 @@ public class TransmitterRawData {
         String signalVal = "RSSI: " + getReceivedSignalStrength() + " " + System.getProperty("line.separator");
         String uploadDeviceBatteryVal = "Uploader Battery: " + getUploaderBatteryLife() + " " + System.getProperty("line.separator");
         String uploaded = "Uploaded: " + getUploaded() + " " + System.getProperty("line.separator");
+        String RelativeTime = "relateive time (seconds): " + getRelativeTime() / 1000 + " "+ System.getProperty("line.separator");
 
-        return displayDt + transmitterId + transmissionId + rawVal + filterVal + batteryVal + signalVal + uploadDeviceBatteryVal + uploaded;
+        return displayDt + transmitterId + transmissionId + rawVal + filterVal + batteryVal + signalVal + uploadDeviceBatteryVal + uploaded + RelativeTime;
     }
 
+   
 
 
 

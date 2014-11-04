@@ -1,5 +1,6 @@
 package com.ht1.dexterity.app;
 import java.net.*;
+import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 import java.io.*;
@@ -109,6 +110,8 @@ public class ServerSockets  extends Thread {
                 int objectsToReturn = min(rawDataList.size(), ch.numberOfRecords);
                 for (ListIterator<TransmitterRawData> iter = rawDataList.listIterator(); objectsToReturn > 0; ) {
                     TransmitterRawData element = iter.next();
+                    // set the relative time
+                    element.RelativeTime = new Date().getTime() - element.CaptureDateTime;
                     outputLine = gson.toJson(element);
                     out.println(outputLine);
                     objectsToReturn--;
@@ -126,7 +129,7 @@ public class ServerSockets  extends Thread {
             catch (JsonSyntaxException je) {
                 PrintSocketStatus("cought JsonSyntaxException!, trying again...");
             }
+            }
         }
-    }
 
  }
