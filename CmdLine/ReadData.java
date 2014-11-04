@@ -36,7 +36,7 @@ class ReadData {
             Socket MySocket = new Socket(hostName, port);
 
             System.out.println("After the new socket \n");
-            MySocket.setSoTimeout(2000); 
+            MySocket.setSoTimeout(5000); 
                      
             System.out.println("client connected... " );
             

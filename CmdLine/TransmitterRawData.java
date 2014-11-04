@@ -20,6 +20,9 @@ public class TransmitterRawData implements Serializable  {
     public int Uploaded;
     public int UploadAttempts;
     public int UploaderBatteryLife;
+    // When sending set this value to the relative time...
+    // The time between the capture and now...
+    public long RelativeTime; 
 
     public int getTransmissionId() {
         return TransmissionId;
@@ -109,6 +112,10 @@ public class TransmitterRawData implements Serializable  {
         this._id = _id;
     }
 
+    private Long getRelativeTime() {
+        return RelativeTime;
+    }
+
     public TransmitterRawData(){
 
     }
@@ -159,8 +166,9 @@ public class TransmitterRawData implements Serializable  {
         String signalVal = "RSSI: " + getReceivedSignalStrength() + " " + System.getProperty("line.separator");
         String uploadDeviceBatteryVal = "Uploader Battery: " + getUploaderBatteryLife() + " " + System.getProperty("line.separator");
         String uploaded = "Uploaded: " + getUploaded() + " " + System.getProperty("line.separator");
+        String RelativeTime = "relateive time (seconds): " + getRelativeTime() / 1000 + " "+ System.getProperty("line.separator");
 
-        return displayDt + transmitterId + transmissionId + rawVal + filterVal + batteryVal + signalVal + uploadDeviceBatteryVal + uploaded;
+        return displayDt + transmitterId + transmissionId + rawVal + filterVal + batteryVal + signalVal + uploadDeviceBatteryVal + uploaded + RelativeTime;
     }
 
 
