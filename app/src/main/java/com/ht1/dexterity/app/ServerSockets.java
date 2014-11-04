@@ -91,6 +91,7 @@ public class ServerSockets  extends Thread {
             try
             {
                 Socket clientSocket = ServerSocket.accept();
+                clientSocket.setSoTimeout(4000);
                 PrintSocketStatus("got connection from " + clientSocket.getRemoteSocketAddress() );
 
                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
@@ -102,6 +103,11 @@ public class ServerSockets  extends Thread {
 
                 inputLine = in.readLine();
                 Log.i(TAG, "Recieved the line " + inputLine);
+                if(inputLine == null) {
+                    PrintSocketStatus("Unexpected null value...\n");
+                    clientSocket.close();
+                    continue;
+                }
                 ch = gson.fromJson(inputLine, ComunicationHeader.class);  				   
                   
                 if(ch.version != 1) {
@@ -140,6 +146,9 @@ public class ServerSockets  extends Thread {
             }
             catch (JsonSyntaxException je) {
                 PrintSocketStatus("cought JsonSyntaxException!, trying again...");
+            }
+            catch (Exception e) {
+                PrintSocketStatus("cought Excption!, trying again... " +  e.getMessage( ));
             }
         }
     }
