@@ -7,6 +7,8 @@ import java.io.*;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Environment;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -25,6 +27,7 @@ public class ServerSockets  extends Thread {
 	// TODO: rename class...
 
     static public String mDebugString;
+    private final String TAG = "tzachi";
 
     private volatile boolean mStop = false;
     
@@ -43,6 +46,7 @@ public class ServerSockets  extends Thread {
     {
         mDebugString += Str;
         mContext.sendBroadcast(new Intent("NEW_PRINT"));
+        Log.i(TAG, Str);
     }
 
     public void Stop()
@@ -57,6 +61,14 @@ public class ServerSockets  extends Thread {
         ComunicationHeader ch;
 
         ServerSocket ServerSocket;
+        String filePath = Environment.getExternalStorageDirectory() + "/tzachilogcat.txt";
+        try {
+            Runtime.getRuntime().exec(new String[]{"logcat", "-f", filePath, "-v", "threadtime", "tzachi:V", "*:S"});
+        } catch (IOException e2) {
+            // TODO Auto-generated catch block
+            e2.printStackTrace();
+        }
+        Log.e(TAG, "Run starting");
         
         try {
             ServerSocket = new ServerSocket(PORT);
@@ -89,7 +101,7 @@ public class ServerSockets  extends Thread {
                 String inputLine, outputLine;
 
                 inputLine = in.readLine();
-                PrintSocketStatus("Recieved the line " + inputLine);
+                Log.i(TAG, "Recieved the line " + inputLine);
                 ch = gson.fromJson(inputLine, ComunicationHeader.class);  				   
                   
                 if(ch.version != 1) {
@@ -122,14 +134,14 @@ public class ServerSockets  extends Thread {
                 PrintSocketStatus("Data send, closing socket......");
                 clientSocket.close();
             }catch(SocketTimeoutException s) {
-                PrintSocketStatus("Socket timed out(server)!, trying again...");
+//                PrintSocketStatus("Socket timed out(server)!, trying again...");
             }catch(IOException e) {
                 PrintSocketStatus("cought IOException!, trying again...");
             }
             catch (JsonSyntaxException je) {
                 PrintSocketStatus("cought JsonSyntaxException!, trying again...");
             }
-            }
         }
+    }
 
  }

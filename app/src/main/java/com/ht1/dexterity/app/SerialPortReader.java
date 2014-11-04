@@ -18,8 +18,6 @@ import android.widget.Toast;
 import com.hoho.android.usbserial.driver.CdcAcmSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
-
-
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +33,7 @@ public class SerialPortReader
 	private String mError = "";
 	private static final int  MAX_RECORDS_TO_UPLOAD = 6;
     private boolean mStop = false;
+    private final String TAG = "tzachi";
 
 	// private constructor so can only be instantiated from static member
 	private SerialPortReader(Context context)
@@ -73,6 +72,7 @@ public class SerialPortReader
 
 	public void StopThread()
 	{
+	    Log.w(TAG, "StopThread Called");
 		if(mThread != null)
 			mStop = true;
     }
@@ -85,6 +85,7 @@ public class SerialPortReader
 	public void ShowToast(final String toast)
 	{
 		// push a notification rather than toast.
+	    Log.w(TAG, "ShowToast Called " + toast);
 		NotificationManager NM = (NotificationManager)mContext.getSystemService(Context.NOTIFICATION_SERVICE);
 		Notification n = new Notification.Builder(mContext)
 				.setContentTitle("Dexterity receiver")
@@ -110,75 +111,83 @@ public class SerialPortReader
 		@Override
 		public void run()
 		{
-			Looper.prepare();
-
-            UsbManager manager = (UsbManager)mContext.getSystemService(mContext.USB_SERVICE);
-            if (manager == null)
-            {
-                SetError("Failed to obtain USB device manager");
-                done();
-                return;
-            }
-            UsbSerialDriver SerialPort = UsbSerialProber.findFirstDevice(manager);
-            if (SerialPort == null)
-            {
-                SetError("Failed to obtain serial device");
-                done();
-                return;
-            }
-
-            try
-			{
-                SerialPort.open();
-			}
-			catch (IOException e)
-			{
-				SetError(e.getLocalizedMessage());
-				e.printStackTrace();
-                done();
-				return;
-			}
-
-			try
-			{
-                ShowToast("Reading from USB port");
-                mContext.sendBroadcast(new Intent("USB_CONNECT"));
-
-				byte[] rbuf = new byte[4096];
-
-				while(!mStop)
-				{
-					// this is the main loop for transferring
-					try
-					{
-                        Log.i("SerialPortReader", "Reading...");
-						// read aborts when the device is disconnected
-                        int len = SerialPort.read(rbuf, 30000);
-                        if (len > 0)
-                        {
-                            rbuf[len] = 0;
-                            setSerialDataToTransmitterRawData(rbuf, len);
+		    try {
+    		    Log.w(TAG, "SerialPortReader run called ");
+    			Looper.prepare();
+    
+                UsbManager manager = (UsbManager)mContext.getSystemService(mContext.USB_SERVICE);
+                if (manager == null)
+                {
+                    SetError("Failed to obtain USB device manager");
+                    done();
+                    return;
+                }
+                UsbSerialDriver SerialPort = UsbSerialProber.findFirstDevice(manager);
+                if (SerialPort == null)
+                {
+                    SetError("Failed to obtain serial device");
+                    done();
+                    return;
+                }
+    
+                try
+    			{
+                    SerialPort.open();
+    			}
+    			catch (IOException e)
+    			{
+    				SetError(e.getLocalizedMessage());
+    				e.printStackTrace();
+                    done();
+    				return;
+    			}
+    
+    			try
+    			{
+                    ShowToast("Reading from USB port");
+                    mContext.sendBroadcast(new Intent("USB_CONNECT"));
+    
+    				byte[] rbuf = new byte[4096];
+    
+    				while(!mStop)
+    				{
+    					// this is the main loop for transferring
+    					try
+    					{
+                            //??????????Log.i(TAG, "Reading the wixel...");
+    						// read aborts when the device is disconnected
+                            int len = SerialPort.read(rbuf, 30000);
+                            if (len > 0)
+                            {
+                                rbuf[len] = 0;
+                                Log.i(TAG, "Reading we have new data...");
+                                setSerialDataToTransmitterRawData(rbuf, len);
+                            }
                         }
-                    }
-					catch (IOException e)
-					{
-						//Not a G4 Packet?
-                        ShowToast("Worker thread IOException: " + e.hashCode());
-                        // abort this thread
-                        mStop = true;
-						e.printStackTrace();
-					}
-				}
-
-				// do this last as it can throw
-                SerialPort.close();
-				Log.i("SerialPortReader", "mStop is true, stopping read process");
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-            done();
+    					catch (IOException e)
+    					{
+    						//Not a G4 Packet?
+                            ShowToast("Worker thread IOException: " + e.hashCode());
+                            // abort this thread
+                            Log.e(TAG, "WTF ???????????/ why are we getting out ?????????");
+                            mStop = true;
+    						e.printStackTrace();
+    					}
+    				}
+    
+    				// do this last as it can throw
+                    SerialPort.close();
+    				Log.i(TAG, "mStop is true, stopping read process");
+    			}
+    			catch (IOException e)
+    			{
+    				e.printStackTrace();
+    			}
+                done();
+		    }
+		    finally {
+		      Log.e(TAG, "We are leaving the SerialPortReader run do we know why???? ");
+		    }
 		}
 	};
 
@@ -186,7 +195,7 @@ public class SerialPortReader
 	{
 		mError = sError;
 		ShowToast(mError);
-		Log.i("SerialPortReader: ", mError);
+		Log.i(TAG, mError);
 	}
 
 	public void setSerialDataToTransmitterRawData(byte[] buffer, int len)

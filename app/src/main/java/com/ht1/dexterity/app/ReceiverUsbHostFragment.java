@@ -12,6 +12,7 @@ import android.content.ServiceConnection;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +42,7 @@ public class ReceiverUsbHostFragment extends Fragment
     private View mRootView;
 	private DataUpdateReceiver dataUpdateReceiver;
 	private DexterityDataSource mDataSource;
+	private final String TAG = "tzachi";
 
 
 /*
@@ -68,12 +70,14 @@ public class ReceiverUsbHostFragment extends Fragment
 		{
 			if (intent.getAction().equals("USB_CONNECT"))
 			{
+			    Log.i(TAG, "USB_CONNECT");
 //				final ToggleButton button = (ToggleButton) mRootView.findViewById(R.id.toggleButton);
 //				button.setChecked(true);
 				mUsbDeviceName.setText("Connected");
 			}
             else if (intent.getAction().equals("USB_DISCONNECT"))
 			{
+                Log.i(TAG, "USB_DISCONNECT");
 //                final ToggleButton button = (ToggleButton) mRootView.findViewById(R.id.toggleButton);
 //                button.setChecked(false);
                 mUsbDeviceName.setText("Disconnected");

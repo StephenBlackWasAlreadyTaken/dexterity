@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class DexterityUsbReceiverService extends Service
 {
-    private static final String TAG = "DexterityUsbReceiverService";
+    private static final String TAG = "tzachi";
     private SerialPortReader mReader;
     private final IBinder mBinder = new DexterityUsbServiceBinder();
     private BroadcastReceiver mDetachReceiver;
@@ -65,7 +65,7 @@ public class DexterityUsbReceiverService extends Service
     {
         if (mReader != null)
         {
-            Log.i(TAG, "Setting stop...");
+            Log.i(TAG, "stopSerialRead: Setting stop...");
             mReader.StopThread();
         }
     }
@@ -140,12 +140,14 @@ public class DexterityUsbReceiverService extends Service
             {
                 if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED))
                 {
+                    Log.i(TAG, "StartBroadcastReceiver: ACTION_USB_DEVICE_DETACHED");
                     mDetached = true;
                     stopSerialRead();
                     StartUsbWatcher();
                 }
                 else if(intent.getAction().equals("USB_DEVICE_ATTACH"))
                 {
+                    Log.i(TAG, "StartBroadcastReceiver: USB_DEVICE_ATTACH");
                     mDetached = false;
                     startSerialRead();
                 }
