@@ -1,0 +1,8 @@
+setprop service.adb.tcp.port 5555
+stop adbd
+start adbd
+adb connect localhost:5555
+adb devices
+adb shell ps | grep Dexi
+adb shell kill -3 539
+cat /data/anr/traces.txt

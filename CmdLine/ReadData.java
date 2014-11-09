@@ -12,7 +12,7 @@ class ReadData {
         if(args.length >= 1) {
             numberOfRecords = Integer.parseInt(args[0]);
         }
-        Read("192.168.1.25", 50005, numberOfRecords);
+        Read("192.168.1.13", 50005, numberOfRecords);
     }
 
 
