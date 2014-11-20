@@ -2,4 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.ht1.dexterity.app.DexterityActivity" >
 
+     <!-- Settings, should always be in the overflow -->
+    <item android:id="@+id/action_settings"
+          android:title="@string/action_settings"
+          android:showAsAction="never" />
 </menu>

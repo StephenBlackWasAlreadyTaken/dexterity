@@ -20,4 +20,8 @@
     <string name="title_activity_usb_attach_workaround">UsbAttachWorkaroundActivity</string>
     <string name="hello_world">Hello world!</string>
 
+    <string name="setting_title">Comunication setting</string>
+    <string name="port_number">Port Number</string>
+    <string name="port_number_summary">Set port for tcp connection to this device</string>    
+
 </resources>
