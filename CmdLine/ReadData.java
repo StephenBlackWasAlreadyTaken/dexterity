@@ -22,7 +22,7 @@ class ReadData {
     
     public static void main(String[] args) {
         
-        Read(args[0], 3);
+        Read(args[0], 20);
         return;
         
 /*        

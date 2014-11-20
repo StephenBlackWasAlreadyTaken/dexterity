@@ -3,6 +3,6 @@ stop adbd
 start adbd
 adb connect localhost:5555
 adb devices
-adb shell ps | grep Dexi
+adb shell ps | grep dex
 adb shell kill -3 539
 cat /data/anr/traces.txt
