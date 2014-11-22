@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Binder;
+import android.os.Environment;
 import android.os.FileObserver;
 import android.os.Handler;
 import android.os.IBinder;
@@ -100,6 +101,15 @@ public class DexterityUsbReceiverService extends Service
         StartBroadcastReceiver();
         StartUsbWatcher();
 
+        // Start logging to logcat
+        String filePath = Environment.getExternalStorageDirectory() + "/tzachilogcat.txt";
+        try {
+            Runtime.getRuntime().exec(new String[]{"logcat", "-f", filePath, "-v", "threadtime", "tzachi:V", "*:S"});
+        } catch (IOException e2) {
+            // TODO Auto-generated catch block
+            e2.printStackTrace();
+        }
+        
         // Start the socket thread
         try
         {

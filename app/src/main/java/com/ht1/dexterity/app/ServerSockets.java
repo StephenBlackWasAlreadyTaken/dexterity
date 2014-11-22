@@ -7,7 +7,9 @@ import java.io.*;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -33,12 +35,10 @@ public class ServerSockets  extends Thread {
     
     public final static int PORT = 50005 ; // will have to be configurable at last...
     
-    //DexterityActivity mDexterityActivity;
     private final Context mContext;
 	   
     public ServerSockets(Context ctx) throws IOException
     {
-        //mDexterityActivity = da;
         mContext = ctx.getApplicationContext(); 
     }
 
@@ -53,104 +53,153 @@ public class ServerSockets  extends Thread {
     {
         mStop = true;
     }
-
+   
     public void run()
     {
-        Gson gson = new GsonBuilder().create();
-
-        ComunicationHeader ch;
-
-        ServerSocket ServerSocket;
-        String filePath = Environment.getExternalStorageDirectory() + "/tzachilogcat.txt";
-        try {
-            Runtime.getRuntime().exec(new String[]{"logcat", "-f", filePath, "-v", "threadtime", "tzachi:V", "*:S"});
-        } catch (IOException e2) {
-            // TODO Auto-generated catch block
-            e2.printStackTrace();
-        }
-        Log.e(TAG, "Run starting");
+        ServerSocket ServerSocket = null;
+        boolean closeSocket = false;
+        int listenOnPort = -1;
         
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        
+        while(!mStop) {
+            try {
+                int currentRefsPort = Integer.parseInt( preferences.getString("portNumber", "50005"));
+                if (listenOnPort != currentRefsPort) {
+                    if(closeSocket) {
+                        ServerSocket.close();
+                        closeSocket = false;
+                        listenOnPort = -1;
+                    }
+                    
+                    ServerSocket = new ServerSocket(currentRefsPort);
+                    // Socket was opened successfully, update parameters...
+                    listenOnPort = currentRefsPort;
+                    closeSocket = true;
+                }
+                
+                ServerSocket.setSoTimeout(2000);
+                Socket clientSocket = ServerSocket.accept();
+                HandleClient(clientSocket);
+
+                
+            } catch(SocketTimeoutException s) {
+                // We are not printing, since this can happen all the time
+                //        PrintSocketStatus("Socket timed out(server)!, trying again...");
+            } catch (SocketException e) {
+                String stackTrace = Log.getStackTraceString(e);
+                PrintSocketStatus("cought SocketException!, trying again..."  + e + " " + stackTrace);
+                try {
+                    Thread.sleep(1000);
+                } catch(InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
+                continue;
+                
+            } catch (IOException e) {
+                String stackTrace = Log.getStackTraceString(e);
+                PrintSocketStatus("cought IOException!, trying again " + e + " " + stackTrace);
+                
+                try {
+                    Thread.sleep(1000);
+                } catch(InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
+                continue;
+            } 
+            catch (Exception e) {
+                String stackTrace = Log.getStackTraceString(e);
+                PrintSocketStatus("cought Excption!, trying again... " + e + " " + stackTrace);
+            }
+                
+        }
         try {
-            ServerSocket = new ServerSocket(PORT);
-            ServerSocket.setSoTimeout(2000);
-        } catch (SocketException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-            PrintSocketStatus("cought SocketException!, exiting...");
-            return;
+            if (closeSocket) {
+                ServerSocket.close();
+            }
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            PrintSocketStatus("cought IOException!, exiting...");
-            return;
         }
-
+            
         
-        while(!mStop)
-        {
-            try
-            {
-                Socket clientSocket = ServerSocket.accept();
-                clientSocket.setSoTimeout(4000);
-                PrintSocketStatus("got connection from " + clientSocket.getRemoteSocketAddress() );
-
-                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-                BufferedReader in = new BufferedReader(	new InputStreamReader(clientSocket.getInputStream()));
-                
-                
+    }
     
-                String inputLine, outputLine;
+    void HandleClient(Socket clientSocket)
+    {
+        Gson gson = new GsonBuilder().create();
+        ComunicationHeader ch;
 
-                inputLine = in.readLine();
-                Log.i(TAG, "Recieved the line " + inputLine);
-                if(inputLine == null) {
-                    PrintSocketStatus("Unexpected null value...\n");
-                    clientSocket.close();
-                    continue;
-                }
-                ch = gson.fromJson(inputLine, ComunicationHeader.class);  				   
-                  
-                if(ch.version != 1) {
-                    PrintSocketStatus("Unexpected version...\n" + ch.version);
-                    clientSocket.close();
-                    continue;
-                }
-                PrintSocketStatus("Recieved the line + correct version " + inputLine);
+        try {
+            clientSocket.setSoTimeout(4000);
+            PrintSocketStatus("got connection from " + clientSocket.getRemoteSocketAddress() );
 
-                // Get all the data that is currently stored
-                DexterityDataSource source = new DexterityDataSource(mContext);
-                PrintSocketStatus("source = " + source);
-                List<TransmitterRawData> rawDataList = source.getAllDataToUploadObjects();
+            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+            BufferedReader in = new BufferedReader( new InputStreamReader(clientSocket.getInputStream()));
+            
+            
+    
+            String inputLine, outputLine;
 
-                PrintSocketStatus("List size is " + rawDataList.size());
-                source.close();
-
-                int objectsToReturn = min(rawDataList.size(), ch.numberOfRecords);
-                for (ListIterator<TransmitterRawData> iter = rawDataList.listIterator(); objectsToReturn > 0; ) {
-                    TransmitterRawData element = iter.next();
-                    // set the relative time
-                    element.RelativeTime = new Date().getTime() - element.CaptureDateTime;
-                    outputLine = gson.toJson(element);
-                    out.println(outputLine);
-                    objectsToReturn--;
-                }
-                // Mark that we have finished sending.
-                out.println("");
-
-                PrintSocketStatus("Data send, closing socket......");
+            inputLine = in.readLine();
+            Log.i(TAG, "Recieved the line " + inputLine);
+            if(inputLine == null) {
+                PrintSocketStatus("Unexpected null value...\n");
                 clientSocket.close();
-            }catch(SocketTimeoutException s) {
-//                PrintSocketStatus("Socket timed out(server)!, trying again...");
-            }catch(IOException e) {
-                PrintSocketStatus("cought IOException!, trying again...");
+                return;
             }
-            catch (JsonSyntaxException je) {
-                PrintSocketStatus("cought JsonSyntaxException!, trying again...");
+            ch = gson.fromJson(inputLine, ComunicationHeader.class);                   
+              
+            if(ch.version != 1) {
+                PrintSocketStatus("Unexpected version...\n" + ch.version);
+                clientSocket.close();
+                return;
             }
-            catch (Exception e) {
-                PrintSocketStatus("cought Excption!, trying again... " +  e.getMessage( ));
+            PrintSocketStatus("Recieved the line + correct version " + inputLine);
+
+            // Get all the data that is currently stored
+            DexterityDataSource source = new DexterityDataSource(mContext);
+            PrintSocketStatus("source = " + source);
+            List<TransmitterRawData> rawDataList = source.getAllDataToUploadObjects();
+
+            PrintSocketStatus("List size is " + rawDataList.size());
+            source.close();
+
+            int objectsToReturn = min(rawDataList.size(), ch.numberOfRecords);
+            for (ListIterator<TransmitterRawData> iter = rawDataList.listIterator(); objectsToReturn > 0; ) {
+                TransmitterRawData element = iter.next();
+                // set the relative time
+                element.RelativeTime = new Date().getTime() - element.CaptureDateTime;
+                outputLine = gson.toJson(element);
+                out.println(outputLine);
+                objectsToReturn--;
             }
+            // Mark that we have finished sending.
+            out.println("");
+    
+            PrintSocketStatus("Data send, closing socket soon......");
+            
+        }catch(SocketTimeoutException s) {
+    //        PrintSocketStatus("Socket timed out(server)!, trying again...");
+        }catch(IOException e) {
+            String stackTrace = Log.getStackTraceString(e);
+            PrintSocketStatus("cought IOException!, trying again..." + e + " " + stackTrace);
+        }
+        catch (JsonSyntaxException je) {
+            String stackTrace = Log.getStackTraceString(je);
+            PrintSocketStatus("cought JsonSyntaxException!, trying again..."  + je + " " + stackTrace );
+        }
+        catch (Exception e) {
+            String stackTrace = Log.getStackTraceString(e);
+            PrintSocketStatus("cought Excption!, trying again... " + e + " " + stackTrace);
+        }
+        try {
+            clientSocket.close();
+        } catch (IOException e) {
+            String stackTrace = Log.getStackTraceString(e);
+            PrintSocketStatus("cought Excption!, when closing socket trying again... "  + e + " " + stackTrace);
         }
     }
+    
 
  }
