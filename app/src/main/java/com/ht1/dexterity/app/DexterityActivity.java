@@ -26,6 +26,8 @@ import java.util.List;
 public class DexterityActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
+    private static final int RESULT_SETTINGS = 1;
+    
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -159,11 +161,27 @@ public class DexterityActivity extends Activity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+            Intent i = new Intent(this, UserSettingActivity.class);
+            startActivityForResult(i, RESULT_SETTINGS);
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+ 
+        switch (requestCode) {
+        case RESULT_SETTINGS:
+        // TODO: Complete this part...
+     //       showUserSettings();
+            break;
+ 
+        }
+ 
+    }
+    
     /**
      * A placeholder fragment containing a simple view.
      */
