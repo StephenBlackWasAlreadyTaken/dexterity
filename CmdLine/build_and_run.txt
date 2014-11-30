@@ -7,6 +7,13 @@ grep -vi LIST tzachilogcat.txt | grep -v Data | grep -v source | grep -v Recieve
 
 get the logs: pscp root@192.168.1.25:/sdcard/tzachilogcat.txt .
 pscp app/build/outputs/apk/app-debug.apk  root@192.168.1.25:/data/app/com.ht1.dexterity.app-1.apk
+
+
+"C:\Program Files\Java\jdk1.8.0_05\bin\javac.exe" -classpath C:\Users\nirit\take2\dexterity\app\libs\mongo-java-driver-2.12.3.jar;. MongoTry.java
+
+"C:\Program Files\Java\jdk1.8.0_05\bin\java.exe" -classpath C:\Users\nirit\take2\dexterity\app\libs\mongo-java-driver-2.12.3.jar;. MongoTry
+
+
 "C:\Program Files\Java\jdk1.8.0_05\bin\javac.exe" -classpath c:\Users\nirit\AppData\Local\Android\android-studio\lib\gson-2.2.4.jar *.java
 
 "C:\Program Files\Java\jdk1.8.0_05\bin\java.exe" -classpath c:\Users\nirit\AppData\Local\Android\android-studio\lib\gson-2.2.4.jar;. ReadData
