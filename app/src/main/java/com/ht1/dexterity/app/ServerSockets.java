@@ -80,7 +80,9 @@ public class ServerSockets  extends Thread {
                 
                 ServerSocket.setSoTimeout(2000);
                 Socket clientSocket = ServerSocket.accept();
-                HandleClient(clientSocket);
+                ClientWorker worker = new ClientWorker(clientSocket);
+                Thread t = new Thread(worker);
+                t.start();
 
                 
             } catch(SocketTimeoutException s) {
@@ -124,82 +126,89 @@ public class ServerSockets  extends Thread {
             
         
     }
+    class ClientWorker implements Runnable {
+        private Socket m_clientSocket;
     
-    void HandleClient(Socket clientSocket)
-    {
-        Gson gson = new GsonBuilder().create();
-        ComunicationHeader ch;
-
-        try {
-            clientSocket.setSoTimeout(4000);
-            PrintSocketStatus("got connection from " + clientSocket.getRemoteSocketAddress() );
-
-            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader( new InputStreamReader(clientSocket.getInputStream()));
-            
-            
+        ClientWorker(Socket client) {
+            this.m_clientSocket = client;
+        }
+        public void run(){
+            Gson gson = new GsonBuilder().create();
+            ComunicationHeader ch;
     
-            String inputLine, outputLine;
+            Log.i(TAG, "ServerSockets: client thread starting...");
 
-            inputLine = in.readLine();
-            Log.i(TAG, "Recieved the line " + inputLine);
-            if(inputLine == null) {
-                PrintSocketStatus("Unexpected null value...\n");
-                clientSocket.close();
-                return;
-            }
-            ch = gson.fromJson(inputLine, ComunicationHeader.class);                   
-              
-            if(ch.version != 1) {
-                PrintSocketStatus("Unexpected version...\n" + ch.version);
-                clientSocket.close();
-                return;
-            }
-            PrintSocketStatus("Recieved the line + correct version " + inputLine);
-
-            // Get all the data that is currently stored
-            DexterityDataSource source = new DexterityDataSource(mContext);
-            PrintSocketStatus("source = " + source);
-            List<TransmitterRawData> rawDataList = source.getAllDataToUploadObjects();
-
-            PrintSocketStatus("List size is " + rawDataList.size());
-            source.close();
-
-            int objectsToReturn = min(rawDataList.size(), ch.numberOfRecords);
-            for (ListIterator<TransmitterRawData> iter = rawDataList.listIterator(); objectsToReturn > 0; ) {
-                TransmitterRawData element = iter.next();
-                // set the relative time
-                element.RelativeTime = new Date().getTime() - element.CaptureDateTime;
-                outputLine = gson.toJson(element);
-                out.println(outputLine);
-                objectsToReturn--;
-            }
-            // Mark that we have finished sending.
-            out.println("");
+            try {
+                m_clientSocket.setSoTimeout(4000);
+                PrintSocketStatus("got connection from " + m_clientSocket.getRemoteSocketAddress() );
     
-            PrintSocketStatus("Data send, closing socket soon......");
-            
-        }catch(SocketTimeoutException s) {
-    //        PrintSocketStatus("Socket timed out(server)!, trying again...");
-        }catch(IOException e) {
-            String stackTrace = Log.getStackTraceString(e);
-            PrintSocketStatus("cought IOException!, trying again..." + e + " " + stackTrace);
+                PrintWriter out = new PrintWriter(m_clientSocket.getOutputStream(), true);
+                BufferedReader in = new BufferedReader( new InputStreamReader(m_clientSocket.getInputStream()));
+                
+                
+
+                String inputLine, outputLine;
+
+                inputLine = in.readLine();
+                Log.i(TAG, "Recieved the line " + inputLine);
+                if(inputLine == null) {
+                    PrintSocketStatus("Unexpected null value...\n");
+                    m_clientSocket.close();
+                    return;
+                }
+                ch = gson.fromJson(inputLine, ComunicationHeader.class);                   
+                  
+                if(ch.version != 1) {
+                    PrintSocketStatus("Unexpected version...\n" + ch.version);
+                    m_clientSocket.close();
+                    return;
+                }
+                PrintSocketStatus("Recieved the line + correct version " + inputLine);
+
+                // Get all the data that is currently stored
+                DexterityDataSource source = new DexterityDataSource(mContext);
+                PrintSocketStatus("source = " + source);
+                List<TransmitterRawData> rawDataList = source.getAllDataToUploadObjects();
+
+                PrintSocketStatus("List size is " + rawDataList.size());
+                source.close();
+
+                int objectsToReturn = min(rawDataList.size(), ch.numberOfRecords);
+                for (ListIterator<TransmitterRawData> iter = rawDataList.listIterator(); objectsToReturn > 0; ) {
+                    TransmitterRawData element = iter.next();
+                    // set the relative time
+                    element.RelativeTime = new Date().getTime() - element.CaptureDateTime;
+                    outputLine = gson.toJson(element);
+                    out.println(outputLine);
+                    objectsToReturn--;
+                }
+                // Mark that we have finished sending.
+                out.println("");
+        
+                PrintSocketStatus("Data send, closing socket soon......");
+                
+            }catch(SocketTimeoutException s) {
+        //        PrintSocketStatus("Socket timed out(server)!, trying again...");
+            }catch(IOException e) {
+                String stackTrace = Log.getStackTraceString(e);
+                PrintSocketStatus("cought IOException!, trying again..." + e + " " + stackTrace);
+            }
+            catch (JsonSyntaxException je) {
+                String stackTrace = Log.getStackTraceString(je);
+                PrintSocketStatus("cought JsonSyntaxException!, trying again..."  + je + " " + stackTrace );
+            }
+            catch (Exception e) {
+                String stackTrace = Log.getStackTraceString(e);
+                PrintSocketStatus("cought Excption!, trying again... " + e + " " + stackTrace);
+            }
+            try {
+                m_clientSocket.close();
+            } catch (IOException e) {
+                String stackTrace = Log.getStackTraceString(e);
+                PrintSocketStatus("cought Excption!, when closing socket trying again... "  + e + " " + stackTrace);
+            }
         }
-        catch (JsonSyntaxException je) {
-            String stackTrace = Log.getStackTraceString(je);
-            PrintSocketStatus("cought JsonSyntaxException!, trying again..."  + je + " " + stackTrace );
-        }
-        catch (Exception e) {
-            String stackTrace = Log.getStackTraceString(e);
-            PrintSocketStatus("cought Excption!, trying again... " + e + " " + stackTrace);
-        }
-        try {
-            clientSocket.close();
-        } catch (IOException e) {
-            String stackTrace = Log.getStackTraceString(e);
-            PrintSocketStatus("cought Excption!, when closing socket trying again... "  + e + " " + stackTrace);
-        }
+
     }
-    
 
- }
+}
