@@ -1,12 +1,12 @@
 
-c:\Users\nirit\Downloads\pscp.exe app-debug.apk  root@192.168.1.25:/sdcard/
+c:\Users\nirit\Downloads\pscp.exe app-debug.apk  root@192.168.1.27:/sdcard/
 
 cp /sdcard/app-debug.apk  /data/app/com.ht1.dexterity.app-1.apk
 
 grep -vi LIST tzachilogcat.txt | grep -v Data | grep -v source | grep -v Recieved |grep -v connection | grep -v send, > tzachilogcat2.txt
 
-get the logs: pscp root@192.168.1.25:/sdcard/tzachilogcat.txt .
-pscp app/build/outputs/apk/app-debug.apk  root@192.168.1.25:/data/app/com.ht1.dexterity.app-1.apk
+get the logs: pscp root@192.168.1.27:/sdcard/tzachilogcat.txt .
+pscp app/build/outputs/apk/app-debug.apk  root@192.168.1.27:/data/app/com.ht1.dexterity.app-1.apk
 
 
 "C:\Program Files\Java\jdk1.8.0_05\bin\javac.exe" -classpath C:\Users\nirit\take2\dexterity\app\libs\mongo-java-driver-2.12.3.jar;. MongoTry.java
@@ -14,7 +14,7 @@ pscp app/build/outputs/apk/app-debug.apk  root@192.168.1.25:/data/app/com.ht1.de
 "C:\Program Files\Java\jdk1.8.0_05\bin\java.exe" -classpath C:\Users\nirit\take2\dexterity\app\libs\mongo-java-driver-2.12.3.jar;. MongoTry
 
 
-"C:\Program Files\Java\jdk1.8.0_05\bin\javac.exe" -classpath c:\Users\nirit\AppData\Local\Android\android-studio\lib\gson-2.2.4.jar *.java
+"C:\Program Files\Java\jdk1.8.0_05\bin\javac.exe" -classpath c:\Users\nirit\AppData\Local\Android\android-studio\lib\gson-2.2.4.jar;mongo-java-driver-2.12.3.jar *.java
 
-"C:\Program Files\Java\jdk1.8.0_05\bin\java.exe" -classpath c:\Users\nirit\AppData\Local\Android\android-studio\lib\gson-2.2.4.jar;. ReadData
+"C:\Program Files\Java\jdk1.8.0_05\bin\java.exe" -classpath c:\Users\nirit\AppData\Local\Android\android-studio\lib\gson-2.2.4.jar;.;;mongo-java-driver-2.12.3.jar ReadData
 

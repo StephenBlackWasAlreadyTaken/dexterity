@@ -209,6 +209,11 @@ public class SerialPortReader
 
         // we got the read, we should notify
         mContext.sendBroadcast(new Intent("NEW_READ"));
+        
+        // upload the data to the database
+        MongoWrapper mt = new MongoWrapper("mongodb://tzachi_dar:tzachi_dar@ds053958.mongolab.com:53958/nightscout","nightscout", "SnirData", "CaptureDateTime");
+        mt.WriteToMongo(data);
+        
 
 		int recordsToUpload = MAX_RECORDS_TO_UPLOAD;
 		if (retryList.size() < MAX_RECORDS_TO_UPLOAD)

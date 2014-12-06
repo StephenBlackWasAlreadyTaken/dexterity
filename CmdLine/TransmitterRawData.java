@@ -1,10 +1,10 @@
 
 import java.util.Date;
-import java.io.Serializable;
+import com.mongodb.BasicDBObject;
 /**
  * Created by John Costik on 6/7/14.
  */
-public class TransmitterRawData implements Serializable  {
+public class TransmitterRawData {
 
 
     private long _id;
@@ -171,8 +171,28 @@ public class TransmitterRawData implements Serializable  {
         return displayDt + transmitterId + transmissionId + rawVal + filterVal + batteryVal + signalVal + uploadDeviceBatteryVal + uploaded + RelativeTime;
     }
 
-
-
-
+    public BasicDBObject toDbObj() {
+    	BasicDBObject doc = new BasicDBObject("TransmissionId", TransmissionId).
+    			append("TransmitterId", TransmitterId).
+    			append("RawValue", RawValue).
+    			append("FilteredValue", FilteredValue).
+    			append("BatteryLife", BatteryLife).
+    			append("ReceivedSignalStrength", ReceivedSignalStrength).
+    			append("CaptureDateTime", CaptureDateTime).
+    			append("UploaderBatteryLife", UploaderBatteryLife);
+    	return doc;
+    }
+    
+    public TransmitterRawData(BasicDBObject src) {
+    	TransmissionId = src.getInt("TransmissionId");
+    	TransmitterId  = src.getString("TransmitterId");
+    	RawValue       = src.getInt("RawValue");
+    	FilteredValue  = src.getInt("FilteredValue");
+    	BatteryLife    = src.getInt("BatteryLife");
+    	ReceivedSignalStrength = src.getInt("ReceivedSignalStrength");
+    	CaptureDateTime = src.getLong("CaptureDateTime");
+    	UploaderBatteryLife = src.getInt("ReceivedSignalStrength");
+    }
+   
 
 }

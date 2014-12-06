@@ -21,7 +21,8 @@ class ReadData {
     
     
     public static void main(String[] args) {
-        
+    	
+    	//CheckMongo();
         Read(args[0], 20);
         return;
         
@@ -284,4 +285,11 @@ class ReadData {
         }
         return trd_list;
     }
+    public static void CheckMongo() {
+        MongoWrapper mt = new MongoWrapper("mongodb://tzachi_dar:tzachi_dar@ds053958.mongolab.com:53958/nightscout","nightscout", "SnirData", "CaptureDateTime");
+//        mt.WriteToMongo(trd);
+        mt.ReadFromMongo(2);
+    }
+ 
+    
 }

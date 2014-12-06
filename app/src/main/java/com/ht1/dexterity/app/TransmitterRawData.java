@@ -6,7 +6,7 @@ import android.content.IntentFilter;
 import android.os.BatteryManager;
 
 import java.util.Date;
-
+import com.mongodb.BasicDBObject;
 /**
  * Created by John Costik on 6/7/14.
  */
@@ -22,7 +22,7 @@ public class TransmitterRawData {
     public int FilteredValue;
     public int BatteryLife;
     public int ReceivedSignalStrength;
-    public long CaptureDateTime; // For debug...
+    public long CaptureDateTime;
     public int Uploaded;
     public int UploadAttempts;
     public int UploaderBatteryLife;
@@ -117,7 +117,7 @@ public class TransmitterRawData {
     public void set_id(long _id) {
         this._id = _id;
     }
-    
+
     private Long getRelativeTime() {
         return RelativeTime;
     }
@@ -176,9 +176,28 @@ public class TransmitterRawData {
         return displayDt + transmitterId + transmissionId + rawVal + filterVal + batteryVal + signalVal + uploadDeviceBatteryVal + uploaded + RelativeTime;
     }
 
+    public BasicDBObject toDbObj() {
+    	BasicDBObject doc = new BasicDBObject("TransmissionId", TransmissionId).
+    			append("TransmitterId", TransmitterId).
+    			append("RawValue", RawValue).
+    			append("FilteredValue", FilteredValue).
+    			append("BatteryLife", BatteryLife).
+    			append("ReceivedSignalStrength", ReceivedSignalStrength).
+    			append("CaptureDateTime", CaptureDateTime).
+    			append("UploaderBatteryLife", UploaderBatteryLife);
+    	return doc;
+    }
+    
+    public TransmitterRawData(BasicDBObject src) {
+    	TransmissionId = src.getInt("TransmissionId");
+    	TransmitterId  = src.getString("TransmitterId");
+    	RawValue       = src.getInt("RawValue");
+    	FilteredValue  = src.getInt("FilteredValue");
+    	BatteryLife    = src.getInt("BatteryLife");
+    	ReceivedSignalStrength = src.getInt("ReceivedSignalStrength");
+    	CaptureDateTime = src.getLong("CaptureDateTime");
+    	UploaderBatteryLife = src.getInt("ReceivedSignalStrength");
+    }
    
-
-
-
 
 }
