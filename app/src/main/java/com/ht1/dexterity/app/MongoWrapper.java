@@ -11,6 +11,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 import com.mongodb.MongoClientURI;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -105,12 +106,14 @@ public static void main(String[] args) {
 	String dbName_;
 	String collection_;
 	String index_;
+	String machineName_;
 	
-	public MongoWrapper(String dbUriStr, String dbName, String collection, String index) {
+	public MongoWrapper(String dbUriStr, String dbName, String collection, String index, String machineName) {
 		dbUriStr_ = dbUriStr;
 		dbName_ = dbName;
 		collection_ = collection;
 		index_ = index;
+		machineName_ = machineName;
 	}
 	
      public DBCollection openMongoDb() throws UnknownHostException {
@@ -135,7 +138,7 @@ public static void main(String[] args) {
      	DBCollection coll;
      	try {
      		coll = openMongoDb();
-         	BasicDBObject bdbo = trd.toDbObj();
+         	BasicDBObject bdbo = trd.toDbObj(machineName_ + " " + new Date().toLocaleString());
          	coll.insert(bdbo);
 
  		} catch (UnknownHostException e) {
