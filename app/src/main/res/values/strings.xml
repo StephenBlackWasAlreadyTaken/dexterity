@@ -24,4 +24,10 @@
     <string name="port_number">Port Number</string>
     <string name="port_number_summary">Set port for tcp connection to this device</string>    
 
+    <string name="uploader_name">Uploader name</string>
+    <string name="uploader_name_summary">Give a unique name to identify this uploader</string>
+    
+    <string name="db_uri">standard URI</string>
+    <string name="db_uri_summary">Set the standard URI based on the mongolab addresses</string>
+    
 </resources>

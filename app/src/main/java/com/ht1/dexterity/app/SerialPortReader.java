@@ -6,12 +6,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.os.BatteryManager;
 import android.os.Looper;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -211,8 +213,11 @@ public class SerialPortReader
         mContext.sendBroadcast(new Intent("NEW_READ"));
         
         // upload the data to the database
-        MongoWrapper mt = new MongoWrapper("mongodb://tzachi_dar:tzachi_dar@ds053958.mongolab.com:53958/nightscout","nightscout",
-        		"SnirData", "CaptureDateTime", "Misdoron");
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        String MachineName = preferences.getString("machineName", "MachineUnknown");
+        String dbUri = preferences.getString("dbUri", "mongodb://tzachi_dar:tzachi_dar@ds053958.mongolab.com:53958/nightscout");
+        
+        MongoWrapper mt = new MongoWrapper(dbUri, "SnirData", "CaptureDateTime", MachineName);
         mt.WriteToMongo(data);
         
 

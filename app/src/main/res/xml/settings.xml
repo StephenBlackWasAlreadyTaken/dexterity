@@ -9,5 +9,23 @@
                 android:inputType="number"
                 android:defaultValue="50005"
         />
-    </PreferenceCategory>
+
+        <EditTextPreference
+                android:title="@string/uploader_name"
+                android:summary="@string/uploader_name_summary"
+                android:key="machineName"
+                android:inputType="text"
+                android:defaultValue="MachineUnknown"
+        />
+        
+        <EditTextPreference
+                android:title="@string/db_uri"
+                android:summary="@string/db_uri_summary"
+                android:key="dbUri"
+                android:inputType="text"
+                android:defaultValue="mongodb://tzachi_dar:tzachi_dar@ds053958.mongolab.com:53958/nightscout"
+        />
+        
+        
+        </PreferenceCategory>
 </PreferenceScreen>

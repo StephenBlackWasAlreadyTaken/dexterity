@@ -108,9 +108,10 @@ public static void main(String[] args) {
 	String index_;
 	String machineName_;
 	
-	public MongoWrapper(String dbUriStr, String dbName, String collection, String index, String machineName) {
+	public MongoWrapper(String dbUriStr, String collection, String index, String machineName) {
 		dbUriStr_ = dbUriStr;
-		dbName_ = dbName;
+		// dbName is the last part of the string starting with /dbname
+		dbName_ = dbUriStr.substring(dbUriStr.lastIndexOf('/') + 1);;
 		collection_ = collection;
 		index_ = index;
 		machineName_ = machineName;
@@ -138,7 +139,7 @@ public static void main(String[] args) {
      	DBCollection coll;
      	try {
      		coll = openMongoDb();
-         	BasicDBObject bdbo = trd.toDbObj(machineName_ + " " + new Date().toLocaleString());
+         	BasicDBObject bdbo = trd.toDbObj(machineName_ + " " + new Date(trd.CaptureDateTime).toLocaleString());
          	coll.insert(bdbo);
 
  		} catch (UnknownHostException e) {
