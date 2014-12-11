@@ -22,6 +22,7 @@ import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,6 +36,7 @@ public class SerialPortReader
 	private String mError = "";
 	private static final int  MAX_RECORDS_TO_UPLOAD = 6;
     private boolean mStop = false;
+    private long mLastDbWriteTime = 0;
     private final String TAG = "tzachi";
 
 	// private constructor so can only be instantiated from static member
@@ -175,6 +177,7 @@ public class SerialPortReader
                             mStop = true;
     						e.printStackTrace();
     					}
+    					NotifyAliveIfNeeded();
     				}
     
     				// do this last as it can throw
@@ -200,11 +203,35 @@ public class SerialPortReader
 		Log.i(TAG, mError);
 	}
 
-	public void setSerialDataToTransmitterRawData(byte[] buffer, int len)
+	
+	private MongoWrapper CreateMongoWrapper()
 	{
-		TransmitterRawData data = new TransmitterRawData(buffer, len, mContext);
+		// Create the mongo writer
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        String MachineName = preferences.getString("machineName", "MachineUnknown");
+        String dbUri = preferences.getString("dbUri", "mongodb://tzachi_dar:tzachi_dar@ds053958.mongolab.com:53958/nightscout");
+        
+        MongoWrapper mt = new MongoWrapper(dbUri, "SnirData", "CaptureDateTime", MachineName);
+        return mt;
+	}
+
+	private void NotifyAliveIfNeeded() 
+	{
+		if (new Date().getTime() - mLastDbWriteTime > 330000) {
+		    MongoWrapper mt = CreateMongoWrapper();
+		    boolean WritenToDb = mt.WriteDebugDataToMongo("Allive, usb connected to wixler");
+	        if(WritenToDb) {
+	        	mLastDbWriteTime = new Date().getTime();
+	        }
+		}
+	}
+	
+	private void setSerialDataToTransmitterRawData(byte[] buffer, int len)
+	{
+		boolean WritenToDb = false;
+		TransmitterRawData trd = new TransmitterRawData(buffer, len, mContext);
 		DexterityDataSource source = new DexterityDataSource(mContext);
-		data = source.createRawDataEntry(data);
+		trd = source.createRawDataEntry(trd);
 
 		List<TransmitterRawData> retryList = source.getAllDataToUploadObjects();
 		source.close();
@@ -213,12 +240,11 @@ public class SerialPortReader
         mContext.sendBroadcast(new Intent("NEW_READ"));
         
         // upload the data to the database
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-        String MachineName = preferences.getString("machineName", "MachineUnknown");
-        String dbUri = preferences.getString("dbUri", "mongodb://tzachi_dar:tzachi_dar@ds053958.mongolab.com:53958/nightscout");
-        
-        MongoWrapper mt = new MongoWrapper(dbUri, "SnirData", "CaptureDateTime", MachineName);
-        mt.WriteToMongo(data);
+        MongoWrapper mt = CreateMongoWrapper();
+        WritenToDb = mt.WriteToMongo(trd);
+        if(WritenToDb) {
+        	mLastDbWriteTime = new Date().getTime();
+        }
         
 
 		int recordsToUpload = MAX_RECORDS_TO_UPLOAD;

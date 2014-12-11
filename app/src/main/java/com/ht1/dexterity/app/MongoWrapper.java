@@ -133,13 +133,26 @@ public static void main(String[] args) {
      public void closeMongoDb() {
     	 mongoClient_.close();
      }
+
+     public boolean WriteDebugDataToMongo(String message)
+     {
+    	 String complete = machineName_ + " " + new Date().toLocaleString() + " " + message;
+    	 BasicDBObject doc = new BasicDBObject("DebugMessage", complete);
+    	 return WriteToMongo(doc);
+     }
+
      
      public boolean WriteToMongo(TransmitterRawData trd)
+     {
+    	 BasicDBObject bdbo = trd.toDbObj(machineName_ + " " + new Date(trd.CaptureDateTime).toLocaleString());
+    	 return WriteToMongo(bdbo);
+     }
+     
+     public boolean WriteToMongo(BasicDBObject bdbo)
      {
      	DBCollection coll;
      	try {
      		coll = openMongoDb();
-         	BasicDBObject bdbo = trd.toDbObj(machineName_ + " " + new Date(trd.CaptureDateTime).toLocaleString());
          	coll.insert(bdbo);
 
  		} catch (UnknownHostException e) {
