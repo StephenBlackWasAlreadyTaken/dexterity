@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 /**
  * Created by John Costik on 6/8/14.
  */
@@ -28,6 +29,7 @@ public class DexterityDataSource {
             DexteritySqlLiteHelper.COLUMN_UPLOADED,
             DexteritySqlLiteHelper.COLUMN_TRANSMISSION_ID};
     private Context mContext;
+    private final String TAG = "tzachi";
 
     public DexterityDataSource(Context context) {
 
@@ -93,11 +95,21 @@ public class DexterityDataSource {
         return dataList;
     }
 
-    public List<TransmitterRawData> getAllDataToUploadObjects() {
+    public List<TransmitterRawData> getAllDataObjects(boolean onlyNotUploaded, boolean asc) {
         List<TransmitterRawData> dataList = new ArrayList<TransmitterRawData>();
-        String orderBy =  DexteritySqlLiteHelper.COLUMN_ID + " DESC";
+        String orderBy;
+        if (asc) {
+        	orderBy =  DexteritySqlLiteHelper.COLUMN_ID + " ASC";
+        } else {
+        	orderBy =  DexteritySqlLiteHelper.COLUMN_ID + " DESC";
+        }
+        String selection = null;
+        if(onlyNotUploaded) {
+        	selection = "Uploaded=0";
+        }
+        
         Cursor cursor = database.query(DexteritySqlLiteHelper.TABLE_SENSOR,
-                allColumns, "Uploaded=0", null, null, null, orderBy);
+                allColumns, selection, null, null, null, orderBy);
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {

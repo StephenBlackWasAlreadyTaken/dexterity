@@ -232,30 +232,26 @@ public class SerialPortReader
 		TransmitterRawData trd = new TransmitterRawData(buffer, len, mContext);
 		DexterityDataSource source = new DexterityDataSource(mContext);
 		trd = source.createRawDataEntry(trd);
-
-		List<TransmitterRawData> retryList = source.getAllDataToUploadObjects();
-		source.close();
+		List<TransmitterRawData> retryList = source.getAllDataObjects(true, true);
+		
 
         // we got the read, we should notify
         mContext.sendBroadcast(new Intent("NEW_READ"));
         
         // upload the data to the database
         MongoWrapper mt = CreateMongoWrapper();
-        WritenToDb = mt.WriteToMongo(trd);
-        if(WritenToDb) {
-        	mLastDbWriteTime = new Date().getTime();
-        }
-        
 
-		int recordsToUpload = MAX_RECORDS_TO_UPLOAD;
-		if (retryList.size() < MAX_RECORDS_TO_UPLOAD)
-		{
-			recordsToUpload = retryList.size();
-		}
-
-		for (int j = 0; j < recordsToUpload; ++j)
-		{
-			CloudUploader uploader = new CloudUploader(mContext, retryList.get(j));
-		}
+		for (int j = 0; j < retryList.size(); ++j) {
+			trd = retryList.get(j);
+			WritenToDb = mt.WriteToMongo(trd);
+	        if(WritenToDb) {
+	        	mLastDbWriteTime = new Date().getTime();
+	        	trd.setUploaded(1);
+	        	source.updateRawDataEntry(trd);
+	        } else {
+	        	break;
+	        }
+     	}
+		source.close();
 	}
 }

@@ -168,7 +168,7 @@ public class ServerSockets  extends Thread {
                 // Get all the data that is currently stored
                 DexterityDataSource source = new DexterityDataSource(mContext);
                 PrintSocketStatus("source = " + source);
-                List<TransmitterRawData> rawDataList = source.getAllDataToUploadObjects();
+                List<TransmitterRawData> rawDataList = source.getAllDataObjects(false, false);
 
                 PrintSocketStatus("List size is " + rawDataList.size());
                 source.close();
