@@ -232,7 +232,7 @@ public class SerialPortReader
 		TransmitterRawData trd = new TransmitterRawData(buffer, len, mContext);
 		DexterityDataSource source = new DexterityDataSource(mContext);
 		trd = source.createRawDataEntry(trd);
-		List<TransmitterRawData> retryList = source.getAllDataObjects(true, true);
+		List<TransmitterRawData> retryList = source.getAllDataObjects(true, true, 10000);
 		
 
         // we got the read, we should notify

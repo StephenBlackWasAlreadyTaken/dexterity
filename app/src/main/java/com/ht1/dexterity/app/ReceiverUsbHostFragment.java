@@ -213,7 +213,7 @@ public class ReceiverUsbHostFragment extends Fragment
 	{
         mDataSource = new DexterityDataSource(getActivity());
         mDataSource.open();
-        List<String> values = mDataSource.getAllData();
+        List<String> values = mDataSource.getAllData(100);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1, values);
         ListView list = (ListView)mRootView.findViewById(R.id.listView);
         list.setAdapter(adapter);

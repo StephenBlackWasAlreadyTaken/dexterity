@@ -78,14 +78,14 @@ public class DexterityDataSource {
                 + " = " + id, null);
     }
 
-    public List<String> getAllData() {
+    public List<String> getAllData(int maxValues) {
         List<String> dataList = new ArrayList<String>();
         String orderBy =  DexteritySqlLiteHelper.COLUMN_ID + " DESC";
         Cursor cursor = database.query(DexteritySqlLiteHelper.TABLE_SENSOR,
                 allColumns, null, null, null, null, orderBy);
 
         cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
+        while (!cursor.isAfterLast() && dataList.size()  < maxValues) {
             TransmitterRawData data = cursorToRawData(cursor);
             dataList.add(data.toTableString());
             cursor.moveToNext();
@@ -95,7 +95,7 @@ public class DexterityDataSource {
         return dataList;
     }
 
-    public List<TransmitterRawData> getAllDataObjects(boolean onlyNotUploaded, boolean asc) {
+    public List<TransmitterRawData> getAllDataObjects(boolean onlyNotUploaded, boolean asc, int maxValues) {
         List<TransmitterRawData> dataList = new ArrayList<TransmitterRawData>();
         String orderBy;
         if (asc) {
@@ -112,7 +112,7 @@ public class DexterityDataSource {
                 allColumns, selection, null, null, null, orderBy);
 
         cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
+        while (!cursor.isAfterLast() && dataList.size()  < maxValues) {
             TransmitterRawData data = cursorToRawData(cursor);
             dataList.add(data);
             cursor.moveToNext();
