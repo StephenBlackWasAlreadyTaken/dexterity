@@ -13,6 +13,12 @@ import com.google.gson.annotations.SerializedName;
 //import com.nightscout.android.dexcom.TransmitterRawData;
 
 
+class Log {
+	static public void e(String tag, String data) {
+	}
+	static public void i(String tag, String data) {
+	}
+}
 
 class ReadData {
     
@@ -102,7 +108,6 @@ class ReadData {
             return true;
         }
         return false;
-
     }
     
  // last in the array, is first in time
@@ -151,11 +156,11 @@ class ReadData {
     {
         int port;
         System.out.println("Reading From " + hostAndIp);
-//        Log.i(TAG,"Reading From " + host);
+        Log.i(TAG,"Reading From " + hostAndIp);
         String []hosts = hostAndIp.split(":");
         if(hosts.length != 2) {
             System.out.println("Invalid hostAndIp " + hostAndIp);
-//          Log.e(TAG, "Invalid hostAndIp " + hostAndIp);
+            Log.e(TAG, "Invalid hostAndIp " + hostAndIp);
             
             return null;
         }
@@ -163,13 +168,13 @@ class ReadData {
             port = Integer.parseInt(hosts[1]);
         } catch (NumberFormatException nfe) {
             System.out.println("Invalid port " +hosts[1]);
-//          Log.e(TAG, "Invalid hostAndIp " + hostAndIp);
+            Log.e(TAG, "Invalid hostAndIp " + hostAndIp);
             return null;
             
         }
         if (port < 10 || port > 65536) {
             System.out.println("Invalid port " +hosts[1]);
-//          Log.e(TAG, "Invalid hostAndIp " + hostAndIp);
+            Log.e(TAG, "Invalid hostAndIp " + hostAndIp);
             return null;
             
         }
@@ -180,7 +185,7 @@ class ReadData {
         } catch(Exception e) {
             // We had some error, need to move on...
             System.out.println("read from host failed cought expation" + hostAndIp);
-//          Log.e(TAG, ""read from host failed" + hostAndIp);
+            Log.e(TAG, "read from host failed " + hostAndIp);
 
             return null;
             
@@ -193,7 +198,7 @@ class ReadData {
     {
         String []hosts = hostsNames.split(",");
         if(hosts.length == 0) {
-//            Log.e(TAG, "Error no hosts were found " + hostsNames);
+            Log.e(TAG, "Error no hosts were found " + hostsNames);
             return null;
         }
         List <List<TransmitterRawData>> allTransmitterRawData =  new LinkedList <List<TransmitterRawData>>();
@@ -208,17 +213,16 @@ class ReadData {
         // merge the information
         if (allTransmitterRawData.size() == 0) {
             System.out.println("Could not read anything from " + hostsNames);
-//          Log.e(TAG, "Could not read anything from " + hostsNames);
+            Log.e(TAG, "Could not read anything from " + hostsNames);
             return null;
 
         }
         List<TransmitterRawData> mergedData= MergeLists(allTransmitterRawData);
         
+        int retSize = Math.min(numberOfRecords, mergedData.size());
+        TransmitterRawData []trd_array = new TransmitterRawData[retSize];
+        mergedData.subList(mergedData.size() - retSize, mergedData.size()).toArray(trd_array);
         
-        TransmitterRawData []trd_array;
-        trd_array = new TransmitterRawData[mergedData.size()];
-        mergedData.toArray(trd_array);
-//        Log.i(TAG, "Read returning after error with " + trd_list.size() + "results");
         System.out.println("Final Results========================================================================");
         for (int i= 0; i < trd_array.length; i++) {
             System.out.println( trd_array[i].toTableString());
@@ -230,10 +234,9 @@ class ReadData {
     public static List<TransmitterRawData> Read(String hostName,int port, int numberOfRecords)
     {
         List<TransmitterRawData> trd_list = new LinkedList<TransmitterRawData>();
-        TransmitterRawData []trd_array;
         try
         {
-//            Log.i(TAG, "Read called");
+            Log.i(TAG, "Read called");
             Gson gson = new GsonBuilder().create();
 
             // An example of using gson.
@@ -249,7 +252,7 @@ class ReadData {
             Socket MySocket = new Socket(hostName, port);
 
             System.out.println("After the new socket \n");
-            MySocket.setSoTimeout(5000); 
+            MySocket.setSoTimeout(2000); 
                      
             System.out.println("client connected... " );
             
@@ -271,8 +274,14 @@ class ReadData {
 
                 System.out.println( "data size " +data.length() + " data = "+ data);
                 TransmitterRawData trd = gson.fromJson(data, TransmitterRawData.class);
+                trd.CaptureDateTime = System.currentTimeMillis() - trd.RelativeTime;
+
                 trd_list.add(0,trd);
                 System.out.println( trd.toTableString());
+                if(trd_list.size() == numberOfRecords) {
+                	// We have the data we want, let's get out
+                	break;
+                }
             }
 
 
