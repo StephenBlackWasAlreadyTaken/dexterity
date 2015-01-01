@@ -23,7 +23,7 @@
                 android:summary="@string/db_uri_summary"
                 android:key="dbUri"
                 android:inputType="text"
-                android:defaultValue="mongodb://tzachi_dar:tzachi_dar@ds053958.mongolab.com:53958/nightscout"
+                android:defaultValue="mongodb://user:pass@ds053958.mongolab.com:53958/nightscout"
         />
         
         
