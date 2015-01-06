@@ -192,7 +192,7 @@ public class TransmitterRawData {
     	BatteryLife    = src.getInt("BatteryLife");
     	ReceivedSignalStrength = src.getInt("ReceivedSignalStrength");
     	CaptureDateTime = src.getLong("CaptureDateTime");
-    	UploaderBatteryLife = src.getInt("ReceivedSignalStrength");
+    	UploaderBatteryLife = src.getInt("UploaderBatteryLife");
     }
    
 

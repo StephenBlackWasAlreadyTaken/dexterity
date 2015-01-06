@@ -111,13 +111,14 @@ public static void main(String[] args) {
 	public MongoWrapper(String dbUriStr, String collection, String index, String machineName) {
 		dbUriStr_ = dbUriStr;
 		// dbName is the last part of the string starting with /dbname
-		dbName_ = dbUriStr.substring(dbUriStr.lastIndexOf('/') + 1);;
+		dbName_ = dbUriStr.substring(dbUriStr.lastIndexOf('/') + 1);
 		collection_ = collection;
 		index_ = index;
 		machineName_ = machineName;
 	}
 	
-     public DBCollection openMongoDb() throws UnknownHostException {
+	// Unfortunately, this also throws other exceptions that are not documetned...
+    public DBCollection openMongoDb() throws UnknownHostException {
 
     	MongoClientURI dbUri = new MongoClientURI(dbUriStr_); //?? thros
 	    mongoClient_ = new MongoClient(dbUri);
@@ -131,7 +132,9 @@ public static void main(String[] args) {
     }
      
      public void closeMongoDb() {
-    	 mongoClient_.close();
+         if(mongoClient_ != null) {
+    	 	mongoClient_.close();
+         }
      }
 
      public boolean WriteDebugDataToMongo(String message)
@@ -156,15 +159,17 @@ public static void main(String[] args) {
          	coll.insert(bdbo);
 
  		} catch (UnknownHostException e) {
- 			// TODO Auto-generated catch block
  			e.printStackTrace();
  			return false; 
  		} catch (MongoException e) {
- 			// TODO Auto-generated catch block
+ 			e.printStackTrace();
+ 			return false; 
+ 		} catch (Exception e) {
  			e.printStackTrace();
  			closeMongoDb();
  			return false; 
- 		} finally {
+ 		}
+     	finally {
  			closeMongoDb();
  		}
      	return true;
@@ -176,6 +181,7 @@ public static void main(String[] args) {
     	 
     	List<TransmitterRawData> trd_list = new LinkedList<TransmitterRawData>();
       	DBCollection coll;
+      	TransmitterRawData lastTrd = null;
       	try {
       		coll = openMongoDb();
       		DBCursor cursor = coll.find();
@@ -184,8 +190,20 @@ public static void main(String[] args) {
                 while(cursor.hasNext() && trd_list.size() < numberOfRecords) {
                     //System.out.println(cursor.next());
                     TransmitterRawData trd = new TransmitterRawData((BasicDBObject)cursor.next());
-                    trd_list.add(0,trd);
-                    System.out.println( trd.toTableString());
+                    // Do our best to fix the relative time...
+                    trd.RelativeTime = new Date().getTime() - trd.CaptureDateTime;
+                    // since we are reading it from the db, it was uploaded...
+                    trd.Uploaded = 1;
+                    if(lastTrd == null) {
+                    	trd_list.add(0,trd);
+                    	lastTrd = trd;
+                    	System.out.println( trd.toTableString());
+                    } else if(!ReadData.almostEquals(lastTrd, trd)) {
+                    	lastTrd = trd;
+                    	trd_list.add(0,trd);
+                    	System.out.println( trd.toTableString());
+                    }
+                    
                 }
              } finally {
                 cursor.close();
@@ -198,9 +216,12 @@ public static void main(String[] args) {
   		} catch (MongoException e) {
   			// TODO Auto-generated catch block
   			e.printStackTrace();
-  			closeMongoDb();
   			return trd_list; 
-  		} finally {
+  		} catch (Exception e) {
+ 			e.printStackTrace();
+ 			closeMongoDb();
+ 			return null; 
+ 		}finally {
   			closeMongoDb();
   		}
       	return trd_list;
