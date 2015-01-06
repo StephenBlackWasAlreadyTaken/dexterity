@@ -171,7 +171,7 @@ public class TransmitterRawData {
         return displayDt + transmitterId + transmissionId + rawVal + filterVal + batteryVal + signalVal + uploadDeviceBatteryVal + uploaded + RelativeTime;
     }
 
-    public BasicDBObject toDbObj() {
+    public BasicDBObject toDbObj(String DebugInfo) {
     	BasicDBObject doc = new BasicDBObject("TransmissionId", TransmissionId).
     			append("TransmitterId", TransmitterId).
     			append("RawValue", RawValue).
@@ -179,7 +179,8 @@ public class TransmitterRawData {
     			append("BatteryLife", BatteryLife).
     			append("ReceivedSignalStrength", ReceivedSignalStrength).
     			append("CaptureDateTime", CaptureDateTime).
-    			append("UploaderBatteryLife", UploaderBatteryLife);
+    			append("UploaderBatteryLife", UploaderBatteryLife).
+    			append("DebugInfo", DebugInfo);
     	return doc;
     }
     

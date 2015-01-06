@@ -11,6 +11,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 import com.mongodb.MongoClientURI;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -105,12 +106,15 @@ public static void main(String[] args) {
 	String dbName_;
 	String collection_;
 	String index_;
+	String machineName_;
 	
-	public MongoWrapper(String dbUriStr, String dbName, String collection, String index) {
+	public MongoWrapper(String dbUriStr, String collection, String index, String machineName) {
 		dbUriStr_ = dbUriStr;
-		dbName_ = dbName;
+		// dbName is the last part of the string starting with /dbname
+		dbName_ = dbUriStr.substring(dbUriStr.lastIndexOf('/') + 1);;
 		collection_ = collection;
 		index_ = index;
+		machineName_ = machineName;
 	}
 	
      public DBCollection openMongoDb() throws UnknownHostException {
@@ -129,13 +133,26 @@ public static void main(String[] args) {
      public void closeMongoDb() {
     	 mongoClient_.close();
      }
+
+     public boolean WriteDebugDataToMongo(String message)
+     {
+    	 String complete = machineName_ + " " + new Date().toLocaleString() + " " + message;
+    	 BasicDBObject doc = new BasicDBObject("DebugMessage", complete);
+    	 return WriteToMongo(doc);
+     }
+
      
      public boolean WriteToMongo(TransmitterRawData trd)
+     {
+    	 BasicDBObject bdbo = trd.toDbObj(machineName_ + " " + new Date(trd.CaptureDateTime).toLocaleString());
+    	 return WriteToMongo(bdbo);
+     }
+     
+     public boolean WriteToMongo(BasicDBObject bdbo)
      {
      	DBCollection coll;
      	try {
      		coll = openMongoDb();
-         	BasicDBObject bdbo = trd.toDbObj();
          	coll.insert(bdbo);
 
  		} catch (UnknownHostException e) {

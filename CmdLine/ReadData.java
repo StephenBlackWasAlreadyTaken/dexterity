@@ -297,9 +297,9 @@ class ReadData {
         return trd_list;
     }
     public static void CheckMongo() {
-        MongoWrapper mt = new MongoWrapper("mongodb://tzachi_dar:tzachi_dar@ds053958.mongolab.com:53958/nightscout","nightscout", "SnirData", "CaptureDateTime");
+        MongoWrapper mt = new MongoWrapper("mongodb://tzachi_dar:tzachi_dar@ds053958.mongolab.com:53958/nightscout", "SnirData", "CaptureDateTime", "NoMachineName");
 //        mt.WriteToMongo(trd);
-        mt.ReadFromMongo(2);
+        mt.ReadFromMongo(20);
     }
  
     
