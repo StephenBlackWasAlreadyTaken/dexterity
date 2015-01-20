@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/Users/stephenblack/repos/tachi/dexterity/app/libs/mobileservices-1.1.5-sources.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="03d90579555ed2d2f98334a966f6e72d93dc51fc">
+        <dex dex="/Users/stephenblack/repos/tachi/dexterity/app/build/intermediates/pre-dexed/debug/mobileservices-1.1.5-sources-14d0e4ab0c97f7ca885052fbb340c7899872ba6c.jar" />
+    </item>
+    <item
+        jar="/Users/stephenblack/repos/tachi/dexterity/app/libs/gson-2.2.2.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="53bfcd3c8e310d1493b2691484525ed90b04e236">
+        <dex dex="/Users/stephenblack/repos/tachi/dexterity/app/build/intermediates/pre-dexed/debug/gson-2.2.2-38766d2326e30e102eb985c820d5f3377c88b114.jar" />
+    </item>
+    <item
+        jar="/Users/stephenblack/repos/tachi/dexterity/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/19.1.0/classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="3499ceba05ca1f6037c6a2fad73df8f636224a28">
+        <dex dex="/Users/stephenblack/repos/tachi/dexterity/app/build/intermediates/pre-dexed/debug/classes-9fff83201130cba5c385dd966e48b3d84392092b.jar" />
+    </item>
+    <item
+        jar="/Users/stephenblack/repos/tachi/dexterity/app/libs/mobileservices-1.1.5-javadoc.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="3b8efb4aebbdf06530dc05ac727d220be5d6a0db">
+        <dex dex="/Users/stephenblack/repos/tachi/dexterity/app/build/intermediates/pre-dexed/debug/mobileservices-1.1.5-javadoc-bdb53f0d316f086cd7b94a3f5d74fde33c79a2cb.jar" />
+    </item>
+    <item
+        jar="/Users/stephenblack/repos/tachi/dexterity/app/libs/mobileservices-1.1.5.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="12188408c45b88124cb38dd2bedc9b314b5f554b">
+        <dex dex="/Users/stephenblack/repos/tachi/dexterity/app/build/intermediates/pre-dexed/debug/mobileservices-1.1.5-4a219d1c0f70e2f7a0f7d6603bc5f0abd19150d6.jar" />
+    </item>
+    <item
+        jar="/Users/stephenblack/.gradle/caches/modules-2/files-2.1/org.mongodb/mongo-java-driver/2.10.1/9e2c2835b0126a48183ed42129e53b6eb6e259b/mongo-java-driver-2.10.1.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="09e2c2835b0126a48183ed42129e53b6eb6e259b">
+        <dex dex="/Users/stephenblack/repos/tachi/dexterity/app/build/intermediates/pre-dexed/debug/mongo-java-driver-2.10.1-50cbeaa7760dfd323db067205d51b91cece32675.jar" />
+    </item>
+    <item
+        jar="/Users/stephenblack/Library/Android/sdk/extras/android/m2repository/com/android/support/support-v4/19.1.0/support-v4-19.1.0.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67">
+        <dex dex="/Users/stephenblack/repos/tachi/dexterity/app/build/intermediates/pre-dexed/debug/support-v4-19.1.0-7d09012a6c4be76eea2d3ea2613b22c631efaa41.jar" />
+    </item>
+
+</items>

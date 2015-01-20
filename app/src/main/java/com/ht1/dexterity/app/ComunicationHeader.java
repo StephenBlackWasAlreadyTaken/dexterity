@@ -6,8 +6,8 @@ package com.ht1.dexterity.app;
 //  2) send this message.
 //  3) the server will send numberOfRecords of type TransmiterRawData that it has.
 public class ComunicationHeader  {
-    int version;
-    int numberOfRecords;
-    String message;
-    byte reserved[];
+    public int version;
+    public int numberOfRecords;
+    public String message;
+    public byte reserved[];
 }
